@@ -9,16 +9,20 @@
           <div class="title">电商后台管理</div>
         </div></el-col>
         <el-col :span="4"><div class="grid-content bg-purple">
-          <a class="logout" @click.prevent="handleLogout" href="#">退出</a>  
+          <a class="logout" @click.prevent="handleLogout" href="#">退出</a>
         </div></el-col>
       </el-row>
     </el-header>
     <el-container class="container">
       <el-aside class="aside" width="200px">
+        <!--
+          unique-opened只能展开一个菜单项
+          router 可以跳转到index指定的路由路径
+          default-active="1-1" 默认指定某一个menu-item展开，要和item的index的值一样
+        -->
         <el-menu
           :unique-opened="true"
           :router="true"
-          default-active="1-1"
           class="menu">
           <el-submenu index="1">
             <template slot="title">
@@ -82,10 +86,6 @@
               数据报表
             </el-menu-item>
           </el-submenu>
-          
- 
- 
- 
         </el-menu>
       </el-aside>
       <el-main class="main">
@@ -106,7 +106,7 @@ export default {
       this.$router.push({
         name: 'login'
       });
-      // 
+      // 提示
       this.$message.warning('请先登录');
     }
   },
@@ -114,7 +114,7 @@ export default {
     // 退出
     handleLogout() {
       // 删除token
-      sessionStorage.removeItem('token'); 
+      sessionStorage.removeItem('token');
       // 登录页面
       this.$router.push({
         name: 'login'
@@ -162,6 +162,4 @@ export default {
   height: 100%;
   background-color: #e9eef3;
 }
-
 </style>
-

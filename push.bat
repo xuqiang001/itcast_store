@@ -1,1 +1,2 @@
 npm run push
+pause
