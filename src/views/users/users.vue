@@ -9,10 +9,11 @@
     <el-row class="searchContainer">
       <el-col :span="24"><div class="grid-content bg-purple-dark">
         <el-input
+          v-model="searchKey"
           placeholder="请输入内容"
           class="searchInput"
           clearable>
-          <el-button slot="append" icon="el-icon-search"></el-button>
+          <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
         </el-input>
 
         <el-button type="success" plain>添加用户</el-button>
@@ -107,7 +108,9 @@ export default {
       // 分页数据
       pagenum: 1,
       pagesize: 2,
-      total: 0
+      total: 0,
+      // 搜索的数据
+      searchKey: ''
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -116,6 +119,12 @@ export default {
     this.loadData();
   },
   methods: {
+    // 搜索功能
+    handleSearch() {
+      // 让页码为1
+      this.pagenum = 1;
+      this.loadData();
+    },
     // 分页使用的方法
     handleSizeChange(val) {
       // 当界面上选择每页多少条数据后执行
@@ -138,7 +147,7 @@ export default {
       // axios发送请求的时候需要携带token
       this.$http.defaults.headers.common['Authorization'] = token;
 
-      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchKey}`);
       // 获取服务器返回的数据
       const data = res.data;
       if (data.meta.status === 200) {
