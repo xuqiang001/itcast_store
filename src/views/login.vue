@@ -6,7 +6,7 @@
         <el-input v-model="form.username"></el-input>
       </el-form-item>
       <el-form-item label="密码">
-        <el-input v-model="form.password"></el-input>
+        <el-input @keyup.enter.native="handleLogin" type="password" v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button @click="handleLogin" class="login-btn" type="primary">登 录</el-button>
@@ -27,6 +27,27 @@ export default {
   },
   methods: {
     handleLogin() {
+      this.$http.post('login', this.form)
+        .then((res) => {
+          console.log(res);
+          // 我们想要的服务器返回的数据
+          const data = res.data;
+          // 判断登录是否成功
+          if (data.meta.status === 200) {
+            // 登录成功
+            // 1 跳转
+            // 2 提示
+            // 3 保存token
+            sessionStorage.setItem('token', data.data.token);
+            this.$message.success('登录成功');
+          } else {
+            // 登录失败 - 提示
+            this.$message.error('登录失败');
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   }
 };
