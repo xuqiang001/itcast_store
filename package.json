@@ -9,7 +9,8 @@
     "start": "npm run dev",
     "lint": "eslint --ext .js,.vue src",
     "lintfix": "eslint --ext .js,.vue src --fix",
-    "build": "node build/build.js"
+    "build": "node build/build.js",
+    "push": "git add . && git commit "
   },
   "dependencies": {
     "element-ui": "^2.4.0",
