@@ -58,6 +58,7 @@
           <!-- {{ scope.row }} -->
           <!-- {{ scope.row.mg_state }} -->
           <el-switch
+            @change="handleChange(scope.row)"
             v-model="scope.row.mg_state"
             active-color="#13ce66"
             inactive-color="#ff4949">
@@ -119,6 +120,19 @@ export default {
     this.loadData();
   },
   methods: {
+    // 开关状态改变的时候执行
+    async handleChange(user) {
+      // console.log(user);
+      // 用不用自己手工来写token
+      // 不用，因为loadData的时候，已经给this.$http.设置了请求头，携带了token
+      const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
+      const data = res.data;
+      if (data.meta.status === 200) {
+        this.$message.success('用户状态修改成功');
+      } else {
+        this.$message.error('用户状态修改失败');
+      }
+    },
     // 搜索功能
     handleSearch() {
       // 让页码为1
