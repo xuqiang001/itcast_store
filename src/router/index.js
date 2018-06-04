@@ -5,11 +5,25 @@ import Router from 'vue-router';
 import Login from '@/views/login';
 // 导入home组件
 import Home from '@/views/home';
+
+import Users from '@/views/users/users';
 Vue.use(Router);
 
 export default new Router({
   routes: [
     { name: 'login', path: '/login', component: Login },
-    { name: 'home', path: '/', component: Home }
+    {
+      name: 'home',
+      path: '/',
+      component: Home,
+      children: [
+        // 子路由
+        {
+          name: 'users',
+          path: 'users',
+          component: Users
+        }
+      ]
+    }
   ]
 });
