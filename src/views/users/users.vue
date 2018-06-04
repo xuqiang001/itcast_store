@@ -86,6 +86,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页组件 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[2, 4, 6]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -93,7 +103,11 @@
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      // 分页数据
+      pagenum: 1,
+      pagesize: 2,
+      total: 0
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -102,16 +116,35 @@ export default {
     this.loadData();
   },
   methods: {
+    // 分页使用的方法
+    handleSizeChange(val) {
+      // 当界面上选择每页多少条数据后执行
+      this.pagesize = val;
+      this.pagenum = 1;
+      this.loadData();
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      // 当页码发生变化的时候执行
+      // 修改当前页码，重新获取数据列表
+      this.pagenum = val;
+      this.loadData();
+      console.log(`当前页: ${val}`);
+    },
+    // 获取列表数据
     async loadData() {
       // 获取登录以后的token
       const token = sessionStorage.getItem('token');
       // axios发送请求的时候需要携带token
       this.$http.defaults.headers.common['Authorization'] = token;
 
-      const res = await this.$http.get('users?pagenum=1&pagesize=10');
+      const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
       // 获取服务器返回的数据
       const data = res.data;
       if (data.meta.status === 200) {
+        // 设置总共多少条数据
+        this.total = data.data.total;
+
         this.tableData = data.data.users;
       } else {
         this.$message.error('获取数据失败');
