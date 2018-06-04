@@ -9,7 +9,7 @@
           <div class="title">电商后台管理</div>
         </div></el-col>
         <el-col :span="4"><div class="grid-content bg-purple">
-          <a class="logout" href="#">退出</a>  
+          <a class="logout" @click.prevent="handleLogout" href="#">退出</a>  
         </div></el-col>
       </el-row>
     </el-header>
@@ -108,6 +108,18 @@ export default {
       });
       // 
       this.$message.warning('请先登录');
+    }
+  },
+  methods: {
+    // 退出
+    handleLogout() {
+      // 删除token
+      sessionStorage.removeItem('token'); 
+      // 登录页面
+      this.$router.push({
+        name: 'login'
+      });
+      this.$message.success('退出成功');
     }
   }
 };
