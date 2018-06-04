@@ -1,0 +1,47 @@
+<template>
+  <el-container class="container">
+    <el-header class="header">Header</el-header>
+    <el-container class="container">
+      <el-aside class="aside" width="200px">Aside</el-aside>
+      <el-main class="main">Main</el-main>
+    </el-container>
+  </el-container>
+</template>
+
+<script>
+export default {
+  // 判断是否登录
+  beforeCreate() {
+    // 判断sessionStorage中是否有token ，如果没有token认为没有登录
+    const token = sessionStorage.getItem('token');
+    if (!token) {
+      // 跳转会登录页面并且要提示
+      this.$router.push({
+        name: 'login'
+      });
+      // 
+      this.$message.warning('请先登录');
+    }
+  }
+};
+</script>
+
+<style scoped>
+.container {
+  height: 100%;
+}
+
+.header {
+  background-color: #b3c0d1;
+}
+
+.aside {
+  background-color: #d3dce6;
+}
+
+.main {
+  height: 100%;
+  background-color: #e9eef3;
+}
+</style>
+
