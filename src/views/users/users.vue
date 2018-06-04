@@ -29,18 +29,37 @@
         width="50">
       </el-table-column>
       <el-table-column
-        prop="date"
-        label="日期"
-        width="180">
-      </el-table-column>
-      <el-table-column
-        prop="name"
+        prop="username"
         label="姓名"
         width="180">
       </el-table-column>
       <el-table-column
-        prop="address"
-        label="地址">
+        prop="email"
+        label="邮箱"
+        width="180">
+      </el-table-column>
+      <el-table-column
+        prop="mobile"
+        label="电话">
+      </el-table-column>
+      <el-table-column
+        prop="create_time"
+        label="创建时间">
+      </el-table-column>
+      <el-table-column
+        label="用户状态">
+        <template slot-scope="scope">
+          <!-- 获取的是当前行的索引 ，从0开始 -->
+          <!-- {{ scope.$index }} -->
+          <!-- 获取的是当前行绑定的数据 对象 -->
+          <!-- {{ scope.row }} -->
+          <!-- {{ scope.row.mg_state }} -->
+          <el-switch
+            v-model="scope.row.mg_state"
+            active-color="#13ce66"
+            inactive-color="#ff4949">
+          </el-switch>
+        </template>
       </el-table-column>
       <el-table-column label="操作">
         <template slot-scope="scope">
@@ -72,23 +91,29 @@
 export default {
   data() {
     return {
-      tableData: [{
-        date: '2016-05-02',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1518 弄'
-      }, {
-        date: '2016-05-04',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1517 弄'
-      }, {
-        date: '2016-05-01',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1519 弄'
-      }, {
-        date: '2016-05-03',
-        name: '王小虎',
-        address: '上海市普陀区金沙江路 1516 弄'
-      }]
+      tableData: []
+    };
+  },
+  // 组件创建完毕，能够访问data中的成员
+  created() {
+    // 获取列表数据
+    this.loadData();
+  },
+  methods: {
+    async loadData() {
+      // 获取登录以后的token
+      const token = sessionStorage.getItem('token');
+      // axios发送请求的时候需要携带token
+      this.$http.defaults.headers.common['Authorization'] = token;
+
+      const res = await this.$http.get('users?pagenum=1&pagesize=10');
+      // 获取服务器返回的数据
+      const data = res.data;
+      if (data.meta.status === 200) {
+        this.tableData = data.data.users;
+      } else {
+        this.$message.error('获取数据失败');
+      }
     }
   }
 };
