@@ -9,7 +9,7 @@
         <el-input v-model="form.password"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button class="login-btn" type="primary">登 录</el-button>
+        <el-button @click="handleLogin" class="login-btn" type="primary">登 录</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -24,6 +24,10 @@ export default {
         password: ''
       }
     };
+  },
+  methods: {
+    handleLogin() {
+    }
   }
 };
 </script>

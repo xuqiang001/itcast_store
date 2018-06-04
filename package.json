@@ -10,9 +10,11 @@
     "lint": "eslint --ext .js,.vue src",
     "lintfix": "eslint --ext .js,.vue src --fix",
     "build": "node build/build.js",
-    "push": "git add . && git commit "
+    "prepush": "npm run lint",
+    "push": "git add . && git commit && git push"
   },
   "dependencies": {
+    "axios": "^0.18.0",
     "element-ui": "^2.4.0",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1"
