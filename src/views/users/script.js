@@ -151,9 +151,6 @@ export default {
     },
     // 开关状态改变的时候执行
     async handleChange(user) {
-      // console.log(user);
-      // 用不用自己手工来写token
-      // 不用，因为loadData的时候，已经给this.$http.设置了请求头，携带了token
       const res = await this.$http.put(`users/${user.id}/state/${user.mg_state}`);
       const data = res.data;
       if (data.meta.status === 200) {
@@ -186,11 +183,6 @@ export default {
     // 获取列表数据
     async loadData() {
       this.loading = true;
-      // 获取登录以后的token
-      const token = sessionStorage.getItem('token');
-      // axios发送请求的时候需要携带token
-      this.$http.defaults.headers.common['Authorization'] = token;
-
       const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchKey}`);
 
       // 请求已经结束
