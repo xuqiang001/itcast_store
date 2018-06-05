@@ -172,7 +172,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="setRoleDialogVisible = false">取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button @click="handleSetRole" type="primary">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -229,9 +229,25 @@ export default {
     this.loadData();
   },
   methods: {
+    // 分配权限
+    async handleSetRole() {
+      // 1 分析接口，使用的数据  用户id  角色id
+      // 2 调用接口发送请求
+      const { data } = await this.$http.put(`users/${this.selectedUser.id}/role`, {
+        rid: this.selectedUser.rid
+      });
+      if (data.meta.status === 200) {
+        this.setRoleDialogVisible = false;
+        this.$message.success('权限分配成功');
+      } else {
+        this.$message.error('权限分配失败');
+      }
+    },
     // 打开分配权限的对话框
     async handleOpenSetRoleDialog(user) {
       this.setRoleDialogVisible = true;
+      // 记录用户的id，分配权限的时候使用
+      this.selectedUser.id = user.id;
       this.selectedUser.username = user.username;
       // 发送请求，获取所有的角色
       const { data } = await this.$http.get('roles');
