@@ -69,6 +69,7 @@
       <el-table-column label="操作">
         <template slot-scope="scope">
           <el-button
+            @click="handleOpenEditDialog(scope.row)"
             size="mini"
             type="primary"
             icon="el-icon-edit"
@@ -128,6 +129,26 @@
         <el-button type="primary" @click="handleAdd">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 编辑用户的对话框 -->
+    <el-dialog title="修改用户" :visible.sync="editUserDialogVisible">
+      <el-form
+        label-width="100px"
+        :model="userFormData">
+        <el-form-item label="用户名">
+          <el-input disabled v-model="userFormData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="userFormData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="userFormData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editUserDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editUserDialogVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -163,7 +184,9 @@ export default {
           { required: true, message: '请输入密码', trigger: 'blur' },
           { min: 5, max: 11, message: '长度在 5 到 11 个字符', trigger: 'blur' }
         ]
-      }
+      },
+      // 控制编辑窗口显示隐藏
+      editUserDialogVisible: false
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -172,6 +195,12 @@ export default {
     this.loadData();
   },
   methods: {
+    // 点击编辑按钮，打开修改用户的对话框，并且把当前用户信息显示
+    handleOpenEditDialog(user) {
+      this.editUserDialogVisible = true;
+      this.userFormData = user;
+      console.log(this.userFormData);
+    },
     // 根据id删除用户
     async handleDelete(id) {
       this.$confirm('是否确定删除该用户?', '提示', {
