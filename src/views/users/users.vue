@@ -83,6 +83,7 @@
             plain>
           </el-button>
           <el-button
+            @click="handleOpenSetRoleDialog(scope.row)"
             type="success"
             icon="el-icon-check"
             size="mini"
@@ -149,6 +150,27 @@
         <el-button type="primary" @click="handleUpdate">确 定</el-button>
       </div>
     </el-dialog>
+    <!-- 分配角色的对话框 -->
+    <el-dialog title="分配角色" :visible.sync="setRoleDialogVisible">
+      <el-form
+        label-width="100px">
+        <el-form-item label="用户名">
+          {{ selectedUser.username }}
+        </el-form-item>
+        <el-form-item label="请选择角色">
+          <el-select v-model="selectedUser.rid">
+            <el-option label="请选择" :value="-1">
+            </el-option>
+            <el-option>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setRoleDialogVisible = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -186,7 +208,13 @@ export default {
         ]
       },
       // 控制编辑窗口显示隐藏
-      editUserDialogVisible: false
+      editUserDialogVisible: false,
+      selectedUser: {
+        username: '',
+        rid: -1
+      },
+      // 控制分配权限的窗口显示隐藏
+      setRoleDialogVisible: false
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -195,6 +223,11 @@ export default {
     this.loadData();
   },
   methods: {
+    // 打开分配权限的对话框
+    handleOpenSetRoleDialog(user) {
+      this.setRoleDialogVisible = true;
+      this.selectedUser.username = user.username;
+    },
     // 修改用户
     async handleUpdate() {
       const { data } = await this.$http.put(`users/${this.userFormData.id}`, {
