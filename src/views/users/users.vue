@@ -21,6 +21,7 @@
     </el-row>
     <!-- 表格 -->
     <el-table
+      v-loading="loading"
       stripe
       border
       :data="tableData"
@@ -147,7 +148,9 @@ export default {
         password: '',
         email: '',
         mobile: ''
-      }
+      },
+      // 控制加载提示的显示隐藏
+      loading: true
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -210,12 +213,19 @@ export default {
     },
     // 获取列表数据
     async loadData() {
+      this.loading = true;
       // 获取登录以后的token
       const token = sessionStorage.getItem('token');
       // axios发送请求的时候需要携带token
       this.$http.defaults.headers.common['Authorization'] = token;
 
       const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchKey}`);
+
+      // 请求已经结束
+      setTimeout(() => {
+        this.loading = false;
+      }, 3000);
+
       // 获取服务器返回的数据
       const data = res.data;
       if (data.meta.status === 200) {
