@@ -75,6 +75,7 @@
             plain>
           </el-button>
           <el-button
+            @click="handleDelete(scope.row.id)"
             size="mini"
             type="danger"
             icon="el-icon-delete"
@@ -99,19 +100,20 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
-
     <!-- 添加用户的对话框 -->
     <el-dialog
       title="添加用户"
       :visible.sync="addUserDialogVisible">
       <el-form
+        ref="addUserForm"
+        :rules="rules"
         label-width="100px"
         label-position="right"
         :model="userFormData">
-        <el-form-item label="用户名">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="userFormData.username" auto-complete="off"></el-input>
         </el-form-item>
-        <el-form-item label="密码">
+        <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="userFormData.password" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="邮箱">
@@ -150,7 +152,18 @@ export default {
         mobile: ''
       },
       // 控制加载提示的显示隐藏
-      loading: true
+      loading: true,
+      // 表单验证的规则
+      rules: {
+        username: [
+          { required: true, message: '请输入用户名', trigger: 'blur' },
+          { min: 3, max: 8, message: '长度在 3 到 8 个字符', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '请输入密码', trigger: 'blur' },
+          { min: 5, max: 11, message: '长度在 5 到 11 个字符', trigger: 'blur' }
+        ]
+      }
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -159,23 +172,53 @@ export default {
     this.loadData();
   },
   methods: {
+    // 根据id删除用户
+    async handleDelete(id) {
+      this.$confirm('是否确定删除该用户?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(async () => {
+          // 删除操作
+          const { data } = await this.$http.delete(`users/${id}`);
+          if (data.meta.status === 200) {
+            // 删除成功
+            this.$message.success('删除成功');
+            this.pagenum = 1;
+            // 重新加载数据
+            this.loadData();
+          } else {
+            // 删除失败
+            this.$message.error(data.meta.msg);
+          }
+        });
+    },
     // 添加用户
     async handleAdd() {
-      const { data } = await this.$http.post('users', this.userFormData);
-      if (data.meta.status === 201) {
-        // 添加成功
-        // 提示   重新加载数据
-        this.$message.success('添加成功');
-        this.loadData();
-        // 关闭对话框
-        this.addUserDialogVisible = false;
-        // 清空文本框的值
-        for (let key in this.userFormData) {
-          this.userFormData[key] = '';
+      // 验证表单
+      this.$refs.addUserForm.validate(async (valid) => {
+        // 验证失败
+        if (!valid) {
+          this.$message.error('请完善内容');
+          return;
         }
-      } else {
-        this.$message.error(data.meta.msg);
-      }
+        // 验证成功
+        const { data } = await this.$http.post('users', this.userFormData);
+        if (data.meta.status === 201) {
+          // 添加成功
+          // 提示   重新加载数据
+          this.$message.success('添加成功');
+          this.loadData();
+          // 关闭对话框
+          this.addUserDialogVisible = false;
+          // 清空文本框的值
+          for (let key in this.userFormData) {
+            this.userFormData[key] = '';
+          }
+        } else {
+          this.$message.error(data.meta.msg);
+        }
+      });
     },
     // 开关状态改变的时候执行
     async handleChange(user) {
@@ -222,9 +265,7 @@ export default {
       const res = await this.$http.get(`users?pagenum=${this.pagenum}&pagesize=${this.pagesize}&query=${this.searchKey}`);
 
       // 请求已经结束
-      setTimeout(() => {
-        this.loading = false;
-      }, 3000);
+      this.loading = false;
 
       // 获取服务器返回的数据
       const data = res.data;
