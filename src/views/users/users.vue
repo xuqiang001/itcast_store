@@ -146,7 +146,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="editUserDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="editUserDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleUpdate">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -195,11 +195,25 @@ export default {
     this.loadData();
   },
   methods: {
+    // 修改用户
+    async handleUpdate() {
+      const { data } = await this.$http.put(`users/${this.userFormData.id}`, {
+        email: this.userFormData.email,
+        mobile: this.userFormData.mobile
+      });
+      if (data.meta.status === 200) {
+        this.$message.success('修改成功');
+        this.loadData();
+        this.editUserDialogVisible = false;
+      } else {
+        this.$message.error(data.meta.msg);
+      }
+    },
     // 点击编辑按钮，打开修改用户的对话框，并且把当前用户信息显示
     handleOpenEditDialog(user) {
       this.editUserDialogVisible = true;
       this.userFormData = user;
-      console.log(this.userFormData);
+      // console.log(this.userFormData);
     },
     // 根据id删除用户
     async handleDelete(id) {
