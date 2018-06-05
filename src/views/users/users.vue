@@ -16,7 +16,7 @@
           <el-button @click="handleSearch" slot="append" icon="el-icon-search"></el-button>
         </el-input>
 
-        <el-button type="success" plain>添加用户</el-button>
+        <el-button @click="addUserDialogVisible = true" type="success" plain>添加用户</el-button>
       </div></el-col>
     </el-row>
     <!-- 表格 -->
@@ -98,6 +98,33 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+
+    <!-- 添加用户的对话框 -->
+    <el-dialog
+      title="添加用户"
+      :visible.sync="addUserDialogVisible">
+      <el-form
+        label-width="100px"
+        label-position="right"
+        :model="userFormData">
+        <el-form-item label="用户名">
+          <el-input v-model="userFormData.username" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="密码">
+          <el-input type="password" v-model="userFormData.password" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="邮箱">
+          <el-input v-model="userFormData.email" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="电话">
+          <el-input v-model="userFormData.mobile" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addUserDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addUserDialogVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -111,7 +138,16 @@ export default {
       pagesize: 2,
       total: 0,
       // 搜索的数据
-      searchKey: ''
+      searchKey: '',
+      // 控制添加用户的对话框是否显示
+      addUserDialogVisible: false,
+      // 用户对应的表单数据
+      userFormData: {
+        username: '',
+        password: '',
+        email: '',
+        mobile: ''
+      }
     };
   },
   // 组件创建完毕，能够访问data中的成员
