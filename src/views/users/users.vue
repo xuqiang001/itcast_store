@@ -161,7 +161,11 @@
           <el-select v-model="selectedUser.rid">
             <el-option label="请选择" :value="-1">
             </el-option>
-            <el-option>
+            <el-option
+              v-for="option in options"
+              :key="option.id"
+              :label="option.roleName"
+              :value="option.id">
             </el-option>
           </el-select>
         </el-form-item>
@@ -214,7 +218,9 @@ export default {
         rid: -1
       },
       // 控制分配权限的窗口显示隐藏
-      setRoleDialogVisible: false
+      setRoleDialogVisible: false,
+      // 存储所有角色，为下拉框服务
+      options: []
     };
   },
   // 组件创建完毕，能够访问data中的成员
@@ -224,9 +230,18 @@ export default {
   },
   methods: {
     // 打开分配权限的对话框
-    handleOpenSetRoleDialog(user) {
+    async handleOpenSetRoleDialog(user) {
       this.setRoleDialogVisible = true;
       this.selectedUser.username = user.username;
+      // 发送请求，获取所有的角色
+      const { data } = await this.$http.get('roles');
+      this.options = data.data;
+
+      // 根据用户的id 去请求用户对象，目的是获取角色id
+      const res = await this.$http.get(`users/${user.id}`);
+      const data1 = res.data;
+      // 获取当前用户的角色id，设置为下拉框的默认值
+      this.selectedUser.rid = data1.data.rid;
     },
     // 修改用户
     async handleUpdate() {
@@ -245,29 +260,32 @@ export default {
     // 点击编辑按钮，打开修改用户的对话框，并且把当前用户信息显示
     handleOpenEditDialog(user) {
       this.editUserDialogVisible = true;
-      this.userFormData = user;
+      // this.userFormData = user;
+      this.userFormData.username = user.username;
+      this.userFormData.mobile = user.mobile;
+      this.userFormData.email = user.email;
       // console.log(this.userFormData);
     },
     // 根据id删除用户
     async handleDelete(id) {
       this.$confirm('是否确定删除该用户?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(async () => {
-          // 删除操作
-          const { data } = await this.$http.delete(`users/${id}`);
-          if (data.meta.status === 200) {
-            // 删除成功
-            this.$message.success('删除成功');
-            this.pagenum = 1;
-            // 重新加载数据
-            this.loadData();
-          } else {
-            // 删除失败
-            this.$message.error(data.meta.msg);
-          }
-        });
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 删除操作
+        const { data } = await this.$http.delete(`users/${id}`);
+        if (data.meta.status === 200) {
+          // 删除成功
+          this.$message.success('删除成功');
+          this.pagenum = 1;
+          // 重新加载数据
+          this.loadData();
+        } else {
+          // 删除失败
+          this.$message.error(data.meta.msg);
+        }
+      });
     },
     // 添加用户
     async handleAdd() {
