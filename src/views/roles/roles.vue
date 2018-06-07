@@ -101,7 +101,7 @@
             plain>
           </el-button>
           <el-button
-            @click="handleShowSetRightsDialog"
+            @click="handleShowSetRightsDialog(scope.row)"
             type="success"
             icon="el-icon-check"
             size="mini"
@@ -117,7 +117,9 @@
         default-expand-all
         show-checkbox
         :data="treeData"
-        :props="defaultProps">
+        :props="defaultProps"
+        node-key="id"
+        :default-checked-keys="checkedKeys">
       </el-tree>
 
       <div slot="footer" class="dialog-footer">
@@ -139,7 +141,9 @@ export default {
       defaultProps: {
         children: 'children',
         label: 'authName'
-      }
+      },
+      // tree默认选中的节点的id
+      checkedKeys: []
     };
   },
   created() {
@@ -180,14 +184,35 @@ export default {
       }
     },
     // 显示权限的对话框
-    async handleShowSetRightsDialog() {
+    async handleShowSetRightsDialog(role) {
       this.setRightsDialogVisible = true;
       // 获取tree的数据
       const { data: resData } = await this.$http.get('rights/tree');
-
       const { data } = resData;
-
       this.treeData = data;
+
+      // 获取当前角色的所有权限
+      // role.children
+
+      var arr = [];
+      // 权限的id，存储到checkedKeys
+      role.children.forEach((item1) => {
+        // item1 一级权限对象
+        arr.push(item1.id);
+
+        // 遍历二级权限
+        item1.children.forEach((item2) => {
+          // item2 二级权限
+          arr.push(item2.id);
+
+          // 遍历三级权限
+          item2.children.forEach((item3) => {
+            // item3 三级权限
+            arr.push(item3.id);
+          });
+        });
+      });
+      this.checkedKeys = arr;
     }
   }
 };
