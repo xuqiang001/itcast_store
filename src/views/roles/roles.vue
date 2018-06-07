@@ -35,7 +35,6 @@
             <el-col :span="20">
               <!-- 显示二、三级权限 -->
               <el-row
-                class="level2"
                 v-for="item1 in item.children"
                 :key="item1.id">
                 <!-- 显示二级权限 -->
@@ -48,7 +47,14 @@
                 </el-col>
                 <!-- 显示三级权限 -->
                 <el-col :span="20">
-
+                  <el-tag
+                    class="level3"
+                    v-for="item2 in item1.children"
+                    :key="item2.id"
+                    closable
+                    type="warning">
+                    {{ item2.authName }}
+                  </el-tag>
                 </el-col>
               </el-row>
             </el-col>
@@ -136,7 +142,8 @@ export default {
   margin-bottom: 15px;
 }
 
-.level2 {
+.level3 {
+  margin-right: 5px;
   margin-bottom: 5px;
 }
 </style>
