@@ -9,7 +9,9 @@
     </el-row>
 
     <el-table
-      height="500"
+      border
+      stripe
+      height="475"
       :data="tableData"
       style="width: 100%">
       <el-tree-grid
@@ -53,6 +55,17 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <el-pagination
+      class="pagination"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="pagenum"
+      :page-sizes="[8, 20, 30, 40]"
+      :page-size="pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="total">
+    </el-pagination>
   </el-card>
 </template>
 
@@ -63,7 +76,10 @@ import ElTreeGrid from 'element-tree-grid';
 export default {
   data() {
     return {
-      tableData: []
+      tableData: [],
+      pagenum: 1,
+      pagesize: 8,
+      total: 0
     };
   },
   created() {
@@ -71,8 +87,22 @@ export default {
   },
   methods: {
     async loadData() {
-      const { data: resData } = await this.$http.get('categories?type=3&pagenum=1&pagesize=10');
+      const { data: resData } = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      // 获取总数据条数
+      this.total = resData.data.total;
       this.tableData = resData.data.result;
+    },
+    // 分页方法
+    handleSizeChange(val) {
+      this.pagesize = val;
+      this.pagenum = 1;
+      this.loadData();
+      console.log(`每页 ${val} 条`);
+    },
+    handleCurrentChange(val) {
+      this.pagenum = val;
+      this.loadData();
+      console.log(`当前页: ${val}`);
     }
   },
   components: {
@@ -85,5 +115,9 @@ export default {
   .row {
     margin-top: 15px;
     margin-bottom: 15px;
+  }
+
+  .pagination {
+    margin-top: 15px;
   }
 </style>
