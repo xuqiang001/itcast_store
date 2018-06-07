@@ -101,6 +101,7 @@
             plain>
           </el-button>
           <el-button
+            @click="setRightsDialogVisible=true"
             type="success"
             icon="el-icon-check"
             size="mini"
@@ -109,6 +110,14 @@
         </template>
       </el-table-column>
     </el-table>
+
+    <!-- 分配权限的对话框 -->
+    <el-dialog title="分配权限" :visible.sync="setRightsDialogVisible">
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="setRightsDialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="setRightsDialogVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -117,7 +126,8 @@ export default {
   data() {
     return {
       tableData: [],
-      loading: true
+      loading: true,
+      setRightsDialogVisible: false
     };
   },
   created() {
