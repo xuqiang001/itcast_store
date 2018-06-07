@@ -46,19 +46,6 @@
 
 <script>
 export default {
-  // 判断是否登录
-  beforeCreate() {
-    // 判断sessionStorage中是否有token ，如果没有token认为没有登录
-    const token = sessionStorage.getItem('token');
-    if (!token) {
-      // 跳转会登录页面并且要提示
-      this.$router.push({
-        name: 'login'
-      });
-      // 提示
-      this.$message.warning('请先登录');
-    }
-  },
   created() {
     this.loadData();
   },

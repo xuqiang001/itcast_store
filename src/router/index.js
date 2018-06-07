@@ -11,9 +11,12 @@ import Users from '@/views/users/users';
 import Rights from '@/views/roles/rights';
 
 import Roles from '@/views/roles/roles';
+
+// 导入element-ui中的Message方法
+import { Message } from 'element-ui';
 Vue.use(Router);
 
-export default new Router({
+const router = new Router({
   routes: [
     { name: 'login', path: '/login', component: Login },
     {
@@ -41,3 +44,28 @@ export default new Router({
     }
   ]
 });
+
+// 全局的路由前置守卫
+// 在路由跳转之前做的干预
+router.beforeEach((to, from, next) => {
+  // 判断是否登录
+  // 登录页面不需要判断token
+  if (to.name === 'login') {
+    next();
+  } else {
+    // 判断时候有token
+    const token = sessionStorage.getItem('token');
+    if (token) {
+      next();
+    } else {
+      // 提示
+      Message.warning('请先登录');
+      // 跳转到登录
+      router.push({
+        name: 'login'
+      });
+    }
+  }
+});
+
+export default router;
