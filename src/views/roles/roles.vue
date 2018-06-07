@@ -234,14 +234,26 @@ export default {
       // this.checkedKeys = arr;
     },
     // 设置当前角色的权限  roleId , rightsIds
-    handleSetRights() {
+    async handleSetRights() {
       // this.currentRoleId 当前角色的id
-
       // 调用tree内部封装的方法
       const arr1 = this.$refs.tree.getCheckedKeys();
       const arr2 = this.$refs.tree.getHalfCheckedKeys();
-      console.log(arr1);
-      console.log(arr2);
+      const rightsIds = arr1.concat(arr2).join(',');
+      // 发送请求
+      const { data: resData } = await this.$http.post(`roles/${this.currentRoleId}/rights`, {
+        rids: rightsIds
+      });
+
+      if (resData.meta.status === 200) {
+        this.$message.success('分配权限成功');
+        this.setRightsDialogVisible = false;
+        // 刷新
+        this.loadData();
+        // 其实，只要刷新当前角色的children属性就可以
+      } else {
+        this.$message.error(resData.meta.msg);
+      }
     }
   }
 };
