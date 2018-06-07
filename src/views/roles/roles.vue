@@ -193,26 +193,39 @@ export default {
 
       // 获取当前角色的所有权限
       // role.children
-
-      var arr = [];
-      // 权限的id，存储到checkedKeys
-      role.children.forEach((item1) => {
-        // item1 一级权限对象
-        arr.push(item1.id);
-
-        // 遍历二级权限
-        item1.children.forEach((item2) => {
-          // item2 二级权限
-          arr.push(item2.id);
-
-          // 遍历三级权限
-          item2.children.forEach((item3) => {
-            // item3 三级权限
-            arr.push(item3.id);
+      function getCheckedKeys(children) {
+        const arr = [];
+        (function fn(list) {
+          list.forEach((item) => {
+            arr.push(item.id);
+            // 递归调用
+            if (item.children) {
+              fn(item.children);
+            }
           });
-        });
-      });
-      this.checkedKeys = arr;
+        })(children);
+        return arr;
+      }
+      this.checkedKeys = getCheckedKeys(role.children);
+      // var arr = [];
+      // // 权限的id，存储到checkedKeys
+      // role.children.forEach((item1) => {
+      //   // item1 一级权限对象
+      //   arr.push(item1.id);
+
+      //   // 遍历二级权限
+      //   item1.children.forEach((item2) => {
+      //     // item2 二级权限
+      //     arr.push(item2.id);
+
+      //     // 遍历三级权限
+      //     item2.children.forEach((item3) => {
+      //       // item3 三级权限
+      //       arr.push(item3.id);
+      //     });
+      //   });
+      // });
+      // this.checkedKeys = arr;
     }
   }
 };
