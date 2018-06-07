@@ -12,6 +12,9 @@ import Rights from '@/views/roles/rights';
 
 import Roles from '@/views/roles/roles';
 
+// 商品分类组件
+import Categories from '@/views/goods/categories';
+
 // 导入element-ui中的Message方法
 import { Message } from 'element-ui';
 Vue.use(Router);
@@ -39,6 +42,11 @@ const router = new Router({
           name: 'roles',
           path: 'roles',
           component: Roles
+        },
+        {
+          name: 'categories',
+          path: 'categories',
+          component: Categories
         }
       ]
     }
