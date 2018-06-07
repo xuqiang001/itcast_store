@@ -13,6 +13,7 @@
     </el-row>
 
     <el-table
+      height="500"
       :data="tableData"
       v-loading="loading"
       stripe
@@ -28,6 +29,7 @@
             <el-col :span="4">
               <!-- 显示一级权限的名称 -->
               <el-tag
+                @close="handleClose(scope.row, item)"
                 closable>
                 {{ item.authName }}
               </el-tag>
@@ -40,6 +42,7 @@
                 <!-- 显示二级权限 -->
                 <el-col :span="4">
                   <el-tag
+                    @close="handleClose(scope.row, item1)"
                     type="success"
                     closable>
                     {{ item1.authName }}
@@ -48,6 +51,7 @@
                 <!-- 显示三级权限 -->
                 <el-col :span="20">
                   <el-tag
+                    @close="handleClose(scope.row, item2)"
                     class="level3"
                     v-for="item2 in item1.children"
                     :key="item2.id"
@@ -57,6 +61,12 @@
                   </el-tag>
                 </el-col>
               </el-row>
+            </el-col>
+          </el-row>
+          <!-- 如果当前角色没有权限的时候 -->
+          <el-row v-if="scope.row.children.length === 0">
+            <el-col :span="24">
+              当前角色没有分配权限
             </el-col>
           </el-row>
         </template>
@@ -114,6 +124,7 @@ export default {
     this.loadData();
   },
   methods: {
+    // 加载角色列表
     async loadData() {
       // 响应对象 res = { data, status }
       // 服务器返回的响应数据在 res.data
@@ -126,6 +137,23 @@ export default {
         // 成功
         this.tableData = data;
       } else {
+        this.$message.error(meta.msg);
+      }
+    },
+    // 删除角色对应的权限
+    async handleClose(role, rights) {
+      // data是响应对象res的data属性，获取的是服务器返回的数据
+      const { data: resData } = await this.$http.delete(`roles/${role.id}/rights/${rights.id}`);
+
+      const { data, meta } = resData;
+      // const {meta} = data;
+      if (meta.status === 200) {
+        // 删除成功？
+        this.$message.success('删除成功');
+        // 重新绑定当前角色下的所有权限
+        role.children = data;
+      } else {
+        // 删除失败
         this.$message.error(meta.msg);
       }
     }
