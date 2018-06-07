@@ -114,6 +114,7 @@
     <!-- 分配权限的对话框 -->
     <el-dialog title="分配权限" :visible.sync="setRightsDialogVisible">
       <el-tree
+        ref="tree"
         default-expand-all
         show-checkbox
         :data="treeData"
@@ -124,7 +125,7 @@
 
       <div slot="footer" class="dialog-footer">
         <el-button @click="setRightsDialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="setRightsDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="handleSetRights">确 定</el-button>
       </div>
     </el-dialog>
   </el-card>
@@ -143,7 +144,9 @@ export default {
         label: 'authName'
       },
       // tree默认选中的节点的id
-      checkedKeys: []
+      checkedKeys: [],
+      // 点击分配权限的时候，记录当前的角色
+      currentRoleId: -1
     };
   },
   created() {
@@ -185,6 +188,9 @@ export default {
     },
     // 显示权限的对话框
     async handleShowSetRightsDialog(role) {
+      // 获取当前的角色id，分配权限的时候使用
+      this.currentRoleId = role.id;
+
       this.setRightsDialogVisible = true;
       // 获取tree的数据
       const { data: resData } = await this.$http.get('rights/tree');
@@ -226,6 +232,16 @@ export default {
       //   });
       // });
       // this.checkedKeys = arr;
+    },
+    // 设置当前角色的权限  roleId , rightsIds
+    handleSetRights() {
+      // this.currentRoleId 当前角色的id
+
+      // 调用tree内部封装的方法
+      const arr1 = this.$refs.tree.getCheckedKeys();
+      const arr2 = this.$refs.tree.getHalfCheckedKeys();
+      console.log(arr1);
+      console.log(arr2);
     }
   }
 };
