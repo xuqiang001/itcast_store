@@ -42,6 +42,7 @@
         label="操作">
         <template slot-scope="scope">
           <el-button
+            @click="handleOpenEditDialog(scope.row)"
             size="mini"
             type="primary"
             icon="el-icon-edit"
@@ -92,6 +93,19 @@
         <el-button type="primary" @click="handleAdd">确 定</el-button>
       </div>
     </el-dialog>
+
+    <!-- 修改分类的对话框 -->
+    <el-dialog title="修改商品分类" :visible.sync="editDialogFormVisible">
+      <el-form label-position="right" label-width="100px" :model="form">
+        <el-form-item label="分类名称">
+          <el-input style="width: 300px" v-model="form.cat_name" auto-complete="off"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="editDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleUpdate">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -123,13 +137,34 @@ export default {
         value: 'cat_id',
         label: 'cat_name',
         children: 'children'
-      }
+      },
+      // 控制修改分类的对话框
+      editDialogFormVisible: false
     };
   },
   created() {
     this.loadData();
   },
   methods: {
+    // 修改分类
+    async handleUpdate() {
+      const { data: resData } = await this.$http.put(`categories/${this.form.cat_id}`, {
+        cat_name: this.form.cat_name
+      });
+      if (resData.meta.status === 200) {
+        this.$message.success('修改成功');
+        this.loadData();
+        this.editDialogFormVisible = false;
+      } else {
+        this.$message.error(resData.meta.msg);
+      }
+    },
+    // 点击编辑按钮，打开修改分类的对话框
+    handleOpenEditDialog(cat) {
+      this.form.cat_name = cat.cat_name;
+      this.form.cat_id = cat.cat_id;
+      this.editDialogFormVisible = true;
+    },
     // 删除分类
     async handleDelete(catId) {
       this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
