@@ -48,6 +48,7 @@
             plain>
           </el-button>
           <el-button
+            @click="handleDelete(scope.row.cat_id)"
             size="mini"
             type="danger"
             icon="el-icon-delete"
@@ -129,6 +130,23 @@ export default {
     this.loadData();
   },
   methods: {
+    // 删除分类
+    async handleDelete(catId) {
+      this.$confirm('此操作将永久删除该数据, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(async () => {
+        // 删除分类数据
+        const { data: resData } = await this.$http.delete(`categories/${catId}`);
+        if (resData.meta.status === 200) {
+          this.$message.success('删除成功');
+          this.loadData();
+        } else {
+          this.$message.error(resData.meta.msg);
+        }
+      });
+    },
     // 添加分类
     async handleAdd() {
       // cat_level  cat_pid
