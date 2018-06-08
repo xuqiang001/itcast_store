@@ -53,11 +53,16 @@
           </el-form-item>
         </el-tab-pane>
         <el-tab-pane name="1" label="商品参数">
-          <el-form-item label="内存">
-            <el-checkbox-group v-model="checkList">
-              <el-checkbox border label="复选框 A"></el-checkbox>
-              <el-checkbox border label="复选框 B"></el-checkbox>
-              <el-checkbox border label="复选框 C"></el-checkbox>
+          <el-form-item
+            v-for="item in dynamicsParams"
+            :key="item.attr_id"
+            :label="item.attr_name">
+            <el-checkbox-group v-model="item.attr_vals">
+              <el-checkbox
+                v-for="val in item.attr_vals"
+                :key="val"
+                border
+                :label="val"></el-checkbox>
             </el-checkbox-group>
           </el-form-item>
         </el-tab-pane>
@@ -118,10 +123,9 @@ export default {
       // 请求的接口地址中的id ，是三级分类的id
       const { data: resData } = await this.$http.get(`categories/${this.selectedOptions[2]}/attributes?sel=many`);
 
+      this.dynamicsParams = resData.data;
       // 获取到动态数据之后，要对数据做一个处理  "attr_vals": "a,b,c"
       // 要把,分割的数据，转换成数组
-      this.dynamicsParams = resData.data;
-
       this.dynamicsParams.forEach((item) => {
         item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
       });
