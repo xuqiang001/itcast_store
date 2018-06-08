@@ -12,6 +12,8 @@ import Rights from '@/views/roles/rights';
 
 import Roles from '@/views/roles/roles';
 
+import Goods from '@/views/goods/goods';
+
 // 商品分类组件
 import Categories from '@/views/goods/categories';
 // 导入element-ui中的Message方法
@@ -46,6 +48,11 @@ const router = new Router({
           name: 'categories',
           path: 'categories',
           component: Categories
+        },
+        {
+          name: 'goods',
+          path: 'goods',
+          component: Goods
         }
       ]
     }
