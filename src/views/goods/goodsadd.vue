@@ -27,19 +27,19 @@
       label-position="top"
       :model="form"
       label-width="100px">
-      <el-tabs v-model="active" class="tabs" tab-position="left">
+      <el-tabs @tab-click="handleTabClick" v-model="active" class="tabs" tab-position="left">
         <el-tab-pane name="0" label="基本信息">
           <el-form-item label="商品名称">
-            <el-input></el-input>
+            <el-input v-model="form.goods_name"></el-input>
           </el-form-item>
           <el-form-item label="商品价格">
-            <el-input></el-input>
+            <el-input v-model="form.goods_price"></el-input>
           </el-form-item>
           <el-form-item label="商品重量">
-            <el-input></el-input>
+            <el-input v-model="form.goods_weight"></el-input>
           </el-form-item>
           <el-form-item label="商品数量">
-            <el-input></el-input>
+            <el-input v-model="form.goods_number"></el-input>
           </el-form-item>
           <el-form-item label="商品分类">
             <el-cascader
@@ -52,7 +52,15 @@
             </el-cascader>
           </el-form-item>
         </el-tab-pane>
-        <el-tab-pane name="1" label="商品参数">商品参数</el-tab-pane>
+        <el-tab-pane name="1" label="商品参数">
+          <el-form-item label="内存">
+            <el-checkbox-group v-model="checkList">
+              <el-checkbox border label="复选框 A"></el-checkbox>
+              <el-checkbox border label="复选框 B"></el-checkbox>
+              <el-checkbox border label="复选框 C"></el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </el-tab-pane>
         <el-tab-pane name="2" label="商品属性">商品属性</el-tab-pane>
         <el-tab-pane name="3" label="商品图片">商品图片</el-tab-pane>
         <el-tab-pane name="4" label="商品内容">商品内容</el-tab-pane>
@@ -67,6 +75,12 @@ export default {
     return {
       active: '0',
       form: {
+        goods_name: '',
+        goods_price: '',
+        goods_number: '',
+        goods_weight: '',
+        // 分类id，用,分割的字符串
+        goods_cat: ''
       },
       // 层级下拉框的数据源
       options: [],
@@ -77,13 +91,41 @@ export default {
         children: 'children'
       },
       // 绑定到层级下拉框上的数据
-      selectedOptions: []
+      selectedOptions: [],
+      checkList: [],
+      // 动态参数
+      dynamicsParams: [],
+      // 静态参数
+      staticParams: []
     };
   },
   created() {
     this.loadOptions();
   },
   methods: {
+    // 点击tab栏执行
+    async handleTabClick() {
+      // 判断当前的tab栏是否是，商品参数/商品属性
+      if (this.active === '1' || this.active === '2') {
+        // 如果是的话，要判断层级下拉中，是否选中的三级分类
+        // 如果没有选中三级分类，要提示用户 选择三级分类
+        if (this.selectedOptions.length !== 3) {
+          this.$message.error('请选择商品的三级分类');
+          return;
+        }
+      }
+      // 如果选择了三级分类，发送请求获取数据
+      // 请求的接口地址中的id ，是三级分类的id
+      const { data: resData } = await this.$http.get(`categories/${this.selectedOptions[2]}/attributes?sel=many`);
+
+      // 获取到动态数据之后，要对数据做一个处理  "attr_vals": "a,b,c"
+      // 要把,分割的数据，转换成数组
+      this.dynamicsParams = resData.data;
+
+      this.dynamicsParams.forEach((item) => {
+        item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
+      });
+    },
     // 层级下拉框选中内容发生变化的时候执行
     handleChange() {
       // 判断当前是否选中的是三级分类
