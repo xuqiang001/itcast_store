@@ -9,6 +9,7 @@
     </el-row>
 
     <el-table
+      v-loading="loading"
       border
       stripe
       height="475"
@@ -66,6 +67,27 @@
       layout="total, sizes, prev, pager, next, jumper"
       :total="total">
     </el-pagination>
+
+    <!-- 添加分类的对话框 -->
+    <el-dialog title="添加商品分类" :visible.sync="addDialogFormVisible">
+      <el-form label-width="100" :model="form">
+        <el-form-item label="分类名称">
+          <el-input v-model="form.cat_name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="分类">
+          <el-cascader
+            expand-trigger="hover"
+            :options="options"
+            :props="defaultProps"
+            v-model="form.cat_pid">
+          </el-cascader>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="addDialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addDialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </el-card>
 </template>
 
@@ -79,7 +101,24 @@ export default {
       tableData: [],
       pagenum: 1,
       pagesize: 8,
-      total: 0
+      total: 0,
+      loading: true,
+      // 控制新增对话框的显示或者隐藏
+      addDialogFormVisible: false,
+      form: {
+        cat_pid: -1,
+        cat_name: '',
+        cat_level: 0
+      },
+      // 层级下拉框中的数据
+      options: [],
+      // 层级下拉框的配置
+      defaultProps: {
+        value: 'cat_id',
+        label: 'cat_name',
+        children: 'children'
+      }
+
     };
   },
   created() {
@@ -87,7 +126,9 @@ export default {
   },
   methods: {
     async loadData() {
+      this.loading = true;
       const { data: resData } = await this.$http.get(`categories?type=3&pagenum=${this.pagenum}&pagesize=${this.pagesize}`);
+      this.loading = false;
       // 获取总数据条数
       this.total = resData.data.total;
       this.tableData = resData.data.result;
