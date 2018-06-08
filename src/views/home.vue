@@ -22,7 +22,7 @@
           <el-submenu
             v-for="item1 in menus"
             :key="item1.id"
-            :index="item1.id">
+            :index="item1.id + ''">
             <template slot="title">
               <i class="el-icon-location"></i>
               <span>{{ item1.authName }}</span>
