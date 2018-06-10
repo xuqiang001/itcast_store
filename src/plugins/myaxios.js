@@ -1,5 +1,5 @@
 import axios from 'axios';
-
+import { Message } from 'element-ui';
 const myaxios = {};
 myaxios.install = function (Vue) {
   const instance = axios.create({
@@ -11,7 +11,6 @@ myaxios.install = function (Vue) {
   // 设置axios的拦截器
   // Add a request interceptor
   instance.interceptors.request.use(function (config) {
-    console.log(config);
     // Do something before request is sent
     // 请求的拦截器，发送请求之前执行
     // 排除掉登录接口，请求登录接口的时候不需要加token
@@ -29,6 +28,19 @@ myaxios.install = function (Vue) {
 
   // Add a response interceptor
   instance.interceptors.response.use(function (response) {
+    // 当获取到服务器的响应之后，并且再交给请求动作之前
+    // console.log(response);
+    const { data: { meta: { status, msg } } } = response;
+
+    // 针对不同的错误码，可以做不同的提示
+    // if (status === 400) {
+    //
+    // } else if (status === 404) {
+    // }
+    if (status !== 200 && status !== 201) {
+      Message.error(msg);
+    }
+
     // Do something with response data
     return response;
   }, function (error) {

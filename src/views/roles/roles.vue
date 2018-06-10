@@ -160,8 +160,6 @@ export default {
       if (meta.status === 200) {
         // 成功
         this.tableData = data;
-      } else {
-        this.$message.error(meta.msg);
       }
     },
     // 删除角色对应的权限
@@ -176,9 +174,6 @@ export default {
         this.$message.success('删除成功');
         // 重新绑定当前角色下的所有权限
         role.children = data;
-      } else {
-        // 删除失败
-        this.$message.error(meta.msg);
       }
     },
     // 显示权限的对话框
@@ -246,8 +241,6 @@ export default {
         // 刷新
         this.loadData();
         // 其实，只要刷新当前角色的children属性就可以
-      } else {
-        this.$message.error(resData.meta.msg);
       }
     }
   }
