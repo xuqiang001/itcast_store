@@ -35,9 +35,12 @@
             type="expand">
             <template slot-scope="scope">
               <el-tag
+                v-for="(item,index) in scope.row.params"
+                :key="index"
                 closable
                 :disable-transitions="false"
-                @close="handleClose">
+                @close="handleClose(scope.row, index)">
+                {{ item }}
               </el-tag>
               <el-input
                 class="input-new-tag"
@@ -140,7 +143,11 @@ export default {
     this.loadOptions();
   },
   methods: {
-    handleClose() {
+    // 点击标签的 关闭按钮，删除当前标签
+    handleClose(row, index) {
+      // 界面上的处理
+      row.params.splice(index, 1);
+      console.log(row.params);
     },
     showInput() {
       this.inputVisible = true;
@@ -185,7 +192,10 @@ export default {
         // 动态参数的 attr_vals 转换成数组
         // 在动态参数对象上增加一个属性，记录数组  params
         this.dynamicParams.forEach((item) => {
-          item.params = item.attr_vals.trim().split(',').length === 0 ? [] : item.attr_vals.trim().split(',');
+          const arr = item.attr_vals.trim().split(',').length === 0 ? [] : item.attr_vals.trim().split(',');
+
+          // 动态给对象，增加的成员，数据绑定会有问题
+          this.$set(item, 'params', arr);
         });
       }
     }
