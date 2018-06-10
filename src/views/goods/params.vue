@@ -219,7 +219,7 @@ export default {
     },
     // 加载层级下拉框的数据
     async loadOptions() {
-      const { data: { data, meta: { status } } } = await this.$http.get('catego123ries?type=3');
+      const { data: { data, meta: { status } } } = await this.$http.get('categories?type=3');
       if (status === 200) {
         this.options = data;
       }
