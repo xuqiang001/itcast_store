@@ -34,6 +34,22 @@
           <el-table-column
             type="expand">
             <template slot-scope="scope">
+              <el-tag
+                closable
+                :disable-transitions="false"
+                @close="handleClose">
+              </el-tag>
+              <el-input
+                class="input-new-tag"
+                v-if="inputVisible"
+                v-model="inputValue"
+                ref="saveTagInput"
+                size="small"
+                @keyup.enter.native="handleInputConfirm"
+                @blur="handleInputConfirm"
+              >
+              </el-input>
+              <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
             </template>
           </el-table-column>
           <el-table-column
@@ -115,13 +131,25 @@ export default {
       activeName: 'many',
       dynamicParams: [],
       staticParams: [],
-      isDisabled: true
+      isDisabled: true,
+      inputVisible: false,
+      inputValue: ''
     };
   },
   created() {
     this.loadOptions();
   },
   methods: {
+    handleClose() {
+    },
+    showInput() {
+      this.inputVisible = true;
+      this.$nextTick(_ => {
+        this.$refs.saveTagInput.$refs.input.focus();
+      });
+    },
+    handleInputConfirm() {
+    },
     // 层级下拉框 发生改变
     handleChange() {
       // 判断 当前是否选择的3 级分类
@@ -129,6 +157,7 @@ export default {
       if (this.selectedOptions.length === 3) {
         // 可用
         this.isDisabled = false;
+        this.loadTableData();
       } else {
         // 不可用
         this.isDisabled = true;
@@ -140,6 +169,25 @@ export default {
       if (status === 200) {
         this.options = data;
       }
+    },
+    // 加载表格数据
+    async loadTableData() {
+      if (this.selectedOptions.length !== 3) {
+        this.$message.warning('请选择三级分类');
+        return;
+      }
+
+      // this.activeName ---> many   only
+      const { data: { data, meta: { status } } } = await this.$http.get(`categories/${this.selectedOptions[2]}/attributes?sel=${this.activeName}`);
+
+      if (status === 200) {
+        this.dynamicParams = data;
+        // 动态参数的 attr_vals 转换成数组
+        // 在动态参数对象上增加一个属性，记录数组  params
+        this.dynamicParams.forEach((item) => {
+          item.params = item.attr_vals.trim().split(',').length === 0 ? [] : item.attr_vals.trim().split(',');
+        });
+      }
     }
   }
 };
@@ -149,5 +197,20 @@ export default {
   .alert {
     margin-top: 15px;
     margin-bottom: 15px;
+  }
+  .el-tag + .el-tag {
+    margin-left: 10px;
+  }
+  .button-new-tag {
+    margin-left: 10px;
+    height: 32px;
+    line-height: 30px;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  .input-new-tag {
+    width: 90px;
+    margin-left: 10px;
+    vertical-align: bottom;
   }
 </style>
