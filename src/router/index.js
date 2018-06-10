@@ -22,6 +22,7 @@ import GoodsAdd from '@/views/goods/goodsadd';
 import Params from '@/views/goods/params';
 
 import Orders from '@/views/orders/orders';
+import Reports from '@/views/reports/reports';
 
 // 导入element-ui中的Message方法
 import { Message } from 'element-ui';
@@ -75,6 +76,11 @@ const router = new Router({
           name: 'orders',
           path: 'orders',
           component: Orders
+        },
+        {
+          name: 'reports',
+          path: 'reports',
+          component: Reports
         }
       ]
     }
