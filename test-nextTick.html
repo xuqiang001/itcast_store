@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <button @click="handleClick">按钮</button> <br>
+
+    <input ref="input" v-model="msg" type="text">
+  </div>
+  <script src="node_modules/vue/dist/vue.js"></script>
+  <script>
+    const vm = new Vue({
+      el: '#app',
+      data: {
+        msg: 'Hello Vue'
+      },
+      methods: {
+        handleClick() {
+          this.msg = 'Hello Itcast';
+
+          // 延迟到下次 DOM 更新循环之后执行
+          this.$nextTick(() => {
+            console.log(this.$refs.input.value);
+          });
+          // setTimeout(() => {
+          //   // 使用dom的方式，获取文本框的值
+          //   console.log(this.$refs.input.value);
+          // }, 0);
+        }
+      }
+    });
+  </script>
+</body>
+</html>

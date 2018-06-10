@@ -25,10 +25,11 @@
     </el-row>
 
     <!-- v-model 绑定的是 激活的tab-pane的name属性的值 -->
-    <el-tabs v-model="activeName">
+    <el-tabs v-model="activeName" @tab-click="handleTabClick">
       <el-tab-pane label="动态参数" name="many">
         <el-button :disabled="isDisabled" type="primary">添加动态参数</el-button>
         <el-table
+          height="400"
           :data="dynamicParams"
           style="width: 100%">
           <el-table-column
@@ -48,8 +49,8 @@
                 v-model="inputValue"
                 ref="saveTagInput"
                 size="small"
-                @keyup.enter.native="handleInputConfirm"
-                @blur="handleInputConfirm"
+                @keyup.enter.native="handleInputConfirm(scope.row)"
+                @blur="handleInputConfirm(scope.row)"
               >
               </el-input>
               <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
@@ -86,6 +87,7 @@
       <el-tab-pane label="静态参数" name="only">
         <el-button :disabled="isDisabled" type="primary">添加静态参数</el-button>
         <el-table
+          height="400"
           :data="staticParams"
           style="width: 100%">
           <el-table-column
@@ -174,7 +176,33 @@ export default {
         this.$refs.saveTagInput.$refs.input.focus();
       });
     },
-    handleInputConfirm() {
+    // 添加标签
+    async handleInputConfirm(row) {
+      if (this.inputValue.length === 0) {
+        return;
+      }
+      row.params.push(this.inputValue);
+      // 清空文本框，显示按钮，隐藏文本框
+      this.inputValue = '';
+      this.inputVisible = false;
+
+      // 准备put的数据
+      const catId = row.cat_id;
+      const attrId = row.attr_id;
+
+      const putData = {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.params.join(',')
+      };
+
+      row.attr_vals = putData.attr_vals;
+      // 发送请求
+      const url = `categories/${catId}/attributes/${attrId}`;
+      const { data: { meta: { status } } } = await this.$http.put(url, putData);
+      if (status === 200) {
+        this.$message.success('更新成功');
+      }
     },
     // 层级下拉框 发生改变
     handleChange() {
@@ -207,16 +235,25 @@ export default {
       const { data: { data, meta: { status } } } = await this.$http.get(`categories/${this.selectedOptions[2]}/attributes?sel=${this.activeName}`);
 
       if (status === 200) {
-        this.dynamicParams = data;
-        // 动态参数的 attr_vals 转换成数组
-        // 在动态参数对象上增加一个属性，记录数组  params
-        this.dynamicParams.forEach((item) => {
-          const arr = item.attr_vals.trim().split(',').length === 0 ? [] : item.attr_vals.trim().split(',');
+        if (this.activeName === 'many') {
+          this.dynamicParams = data;
+          // 动态参数的 attr_vals 转换成数组
+          // 在动态参数对象上增加一个属性，记录数组  params
+          this.dynamicParams.forEach((item) => {
+            const arr = item.attr_vals.trim().split(',').length === 0 ? [] : item.attr_vals.trim().split(',');
 
-          // 动态给对象，增加的成员，数据绑定会有问题
-          this.$set(item, 'params', arr);
-        });
+            // 动态给对象，增加的成员，数据绑定会有问题
+            this.$set(item, 'params', arr);
+          });
+        } else {
+          this.staticParams = data;
+        }
       }
+    },
+    // 点击tab栏的执行
+    handleTabClick() {
+      // loadTableData 内部已经判断了 下拉框是否选择了三级分类
+      this.loadTableData();
     }
   }
 };
