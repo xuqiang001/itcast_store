@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+</head>
+<body>
+  <div id="app">
+    <input v-model="user.name" type="text">
+
+    {{ user.name }}
+    <br>
+
+    <input v-model="user.age" type="text">
+
+    {{ user.age }}
+  </div>
+
+  <script src="node_modules/vue/dist/vue.js"></script>
+  <script>
+    let vm = new Vue({
+      el: '#app',
+      created() {
+        // this.user.age = 18;
+        // console.log(this.user);
+        this.$set(this.user, 'age', 18);
+      },
+      data: {
+        user: {
+          name: 'zs'
+        }
+      }
+    });
+  </script>
+</body>
+</html>
