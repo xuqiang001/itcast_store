@@ -154,10 +154,9 @@ export default {
       // 所有的分类参数
       // this.dynamicsParams  this.staticParams
       const arr1 = this.dynamicsParams.map((item) => {
-        item.attr_vals = item.attr_vals.join(',');
+        // item.attr_vals = item.attr_vals.join(',');
         return { attr_id: item.attr_id, attr_value: item.attr_vals };
       });
-      console.log(arr1);
       const arr2 = this.staticParams.map((item) => {
         return { attr_id: item.attr_id, attr_value: item.attr_vals };
       });
@@ -235,6 +234,7 @@ export default {
         this.dynamicsParams.forEach((item) => {
           item.attr_vals = item.attr_vals.trim().length === 0 ? [] : item.attr_vals.trim().split(',');
         });
+        console.log(this.dynamicsParams);
       } else {
         // 静态参数赋值
         this.staticParams = resData.data;

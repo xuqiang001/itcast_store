@@ -144,10 +144,29 @@ export default {
   },
   methods: {
     // 点击标签的 关闭按钮，删除当前标签
-    handleClose(row, index) {
+    async handleClose(row, index) {
       // 界面上的处理
       row.params.splice(index, 1);
-      console.log(row.params);
+
+      // 准备请求的数据
+      // 准备url上需要的id
+      const catId = row.cat_id;
+      const attrId = row.attr_id;
+      // 再准备put过去的对象
+      const putData = {
+        attr_name: row.attr_name,
+        attr_sel: row.attr_sel,
+        attr_vals: row.params.join(',')
+      };
+      // 让数据一致
+      row.attr_vals = putData.attr_vals;
+
+      // 发送请求
+      const url = `categories/${catId}/attributes/${attrId}`;
+      const { data: { meta: { status } } } = await this.$http.put(url, putData);
+      if (status === 200) {
+        this.$message.success('更新成功');
+      }
     },
     showInput() {
       this.inputVisible = true;
