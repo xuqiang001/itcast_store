@@ -5,7 +5,6 @@ import App from './App';
 import router from './router';
 // 导入elementUI
 import ElementUI from 'element-ui';
-import 'element-ui/lib/theme-chalk/index.css';
 // 全局样式
 import '@/assets/css/index.css';
 // 导入自己写的myaxios插件

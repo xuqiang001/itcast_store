@@ -1,31 +1,31 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-
+// 导入element-ui中的Message方法
+// import { Message } from 'element-ui';
+// 路由懒加载
 // 导入组件
-import Login from '@/views/login';
+const Login = () => import('@/views/login');
 // 导入home组件
-import Home from '@/views/home';
+const Home = () => import('@/views/home');
 
-import Users from '@/views/users/users';
+const Users = () => import('@/views/users/users');
 
-import Rights from '@/views/roles/rights';
+const Rights = () => import('@/views/roles/rights');
 
-import Roles from '@/views/roles/roles';
+const Roles = () => import('@/views/roles/roles');
 
-import Goods from '@/views/goods/goods';
+const Goods = () => import('@/views/goods/goods');
 
 // 商品分类组件
-import Categories from '@/views/goods/categories';
+const Categories = () => import('@/views/goods/categories');
 
-import GoodsAdd from '@/views/goods/goodsadd';
+const GoodsAdd = () => import('@/views/goods/goodsadd');
 
-import Params from '@/views/goods/params';
+const Params = () => import('@/views/goods/params');
 
-import Orders from '@/views/orders/orders';
-import Reports from '@/views/reports/reports';
+const Orders = () => import('@/views/orders/orders');
+const Reports = () => import('@/views/reports/reports');
 
-// 导入element-ui中的Message方法
-import { Message } from 'element-ui';
 Vue.use(Router);
 
 const router = new Router({
@@ -100,9 +100,6 @@ router.beforeEach((to, from, next) => {
     if (token) {
       next();
     } else {
-      // 提示
-      Message.warning('请先登录');
-      // 跳转到登录
       router.push({
         name: 'login'
       });

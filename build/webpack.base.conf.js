@@ -24,6 +24,18 @@ module.exports = {
   entry: {
     app: './src/main.js'
   },
+  // https://webpack.js.org/configuration/externals/#externals
+  // 配置cdn
+  externals: {
+    // 前面的属性 vue 代表的是  import ... from 'vue';
+    // 值 Vue 是vue.js 暴露在全局中的 构造函数名称  
+    vue: 'Vue',
+    axios: 'axios',
+    echarts: 'echarts',
+    'element-ui': 'ELEMENT',
+    moment: 'moment',
+    'vue-router': 'VueRouter'
+  },
   output: {
     path: config.build.assetsRoot,
     filename: '[name].js',
